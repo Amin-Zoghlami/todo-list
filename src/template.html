@@ -7,29 +7,43 @@
 </head>
 <body>
     <button class="show project">Add Project</button>
-    <dialog>
+    <div class="sidebar">
+        <h1>Projects</h1>
+        <ul class="project container">      
+        </ul>
+    </div>
+    <div class="main">
+        <div class="main header">
+        </div>
+        <ul class="todo container">
+        </ul>
+    </div>
+    <dialog class="add project">
         <form>
             <label for="title">Title</label>
-            <input type="text" id="title" name="title">
-            <button class="add project" type="submit">Add Project</button>
+            <input type="text" id="title" name="title" required>
+            <button class="submit project" type="submit">Add Project</button>
+            <button class="close project">Cancel</button>
         </form>
     </dialog>
-    <!-- <dialog>
+    <dialog class="add todo">
         <form>
             <label for="title">Title</label>
-            <input type="text" id="title" name="title">
+            <input type="text" id="title" name="title" required>
             <label for="description">Description</label>
             <input type="text" id="description" name="description">
             <label for="due-date">Due Date</label>
-            <input type="text" id="due-date" name="due-date">
+            <input type="text" id="due-date" name="due-date" required>
             <label for="high">High</label>
             <input type="radio" id="high" name="priority">
             <label for="medium">Medium</label>
-            <input type="radio" id="medium" name="priority">
+            <input type="radio" id="medium" name="priority" checked>
             <label for="low">Low</label>
             <input type="radio" id="low" name="priority">
-            <button class="add project" type="submit">Add Project</button>
+            <label for="project">Project</label>
+            <button class="submit todo" type="submit">Add todo</button>
+            <button class="close todo">Cancel</button>
         </form>
-    </dialog> -->
+    </dialog>
 </body>
 </html>

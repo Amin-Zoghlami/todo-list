@@ -4,10 +4,6 @@ import Project from "./project.js";
 export default class App {
     #projects = [];
     
-    constructor () {
-        this.addProject("General");
-    }
-
     getProjects() {
         return [...this.#projects];
     }
@@ -18,6 +14,10 @@ export default class App {
 
     getProjectTitle(index) {
         return this.getProject(index).getTitle();
+    }
+
+    getProjectTodos(index) {
+        return this.getProject(index).getTodos();
     }
 
     getTodo(projectIndex, todoIndex) {
