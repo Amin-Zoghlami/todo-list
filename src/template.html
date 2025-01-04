@@ -6,28 +6,28 @@
     <title>Todo List</title>
 </head>
 <body>
-    <button class="show project">Add Project</button>
+    <button class="show-project">Add Project</button>
     <div class="sidebar">
         <h1>Projects</h1>
-        <ul class="project container">      
+        <ul class="project-container">      
         </ul>
     </div>
     <div class="main">
-        <div class="main header">
+        <div class="project-header">
         </div>
         <ul class="todo container">
         </ul>
     </div>
-    <dialog class="add project">
-        <form>
+    <dialog class="project">
+        <form class="project">
             <label for="title">Title</label>
             <input type="text" id="title" name="title" required>
-            <button class="submit project" type="submit">Add Project</button>
-            <button class="close project">Cancel</button>
+            <button class="submit-project" type="submit">Add Project</button>
+            <button class="close-project">Cancel</button>
         </form>
     </dialog>
-    <dialog class="add todo">
-        <form>
+    <dialog class="todo">
+        <form class="todo">
             <label for="title">Title</label>
             <input type="text" id="title" name="title" required>
             <label for="description">Description</label>
@@ -41,8 +41,8 @@
             <label for="low">Low</label>
             <input type="radio" id="low" name="priority">
             <label for="project">Project</label>
-            <button class="submit todo" type="submit">Add todo</button>
-            <button class="close todo">Cancel</button>
+            <button class="submit-todo" type="submit">Add todo</button>
+            <button class="close-todo">Cancel</button>
         </form>
     </dialog>
 </body>
