@@ -10,7 +10,7 @@ export default class Project {
         this.todos.push(todo);
     }
 
-    removeTodo(index) {
-        this.todos.splice(index, 1);
+    removeTodo(i) {
+        this.todos.splice(i, 1);
     }
 };

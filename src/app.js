@@ -5,7 +5,7 @@ export default class App {
         this.projects.push(project);
     }
 
-    removeProject(index) {
-        this.projects.splice(index, 1);
+    removeProject(i) {
+        this.projects.splice(i, 1);
     }
 };

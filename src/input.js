@@ -3,42 +3,48 @@ import Project from "./project.js"
 import App from "./app.js";
 
 export default class Input {
+    
     projectContainer = document.querySelector(".project-container");
+    projectHeader = document.querySelector(".project-header");
+    projectShow = document.querySelector(".show-project");
     projectDialog = document.querySelector("dialog.project");
     projectForm = document.querySelector("form.project");
     projectSubmit = document.querySelector(".submit-project");
+    projectClose = document.querySelector(".close-project");
 
+    todoContainer = document.querySelector(".todo-container");
     todoDialog = document.querySelector("dialog.todo");
     todoForm = document.querySelector("form.todo");
     todoSubmit = document.querySelector(".submit-todo");
+    todoClose = document.querySelector(".close-todo");
 
     constructor() {
         this.app = new App();
-        
+        this.addInputs();
     }
     
     addInputs() {
-        this.addShowProjectInput();
-        this.addCloseButtons();
-        this.addSubmitProjectInput();
-        this.addSubmitTodoInput();
+        this.addProjectShowInput();
+        this.addClose();
+        this.addProjectSubmitInput();
+        this.addTodoSubmitInput();
     }
     
-    addShowProjectInput() {
-        this.showProjectButton.addEventListener("click", () => {
+    addProjectShowInput() {
+        this.projectShow.addEventListener("click", () => {
             this.projectDialog.showModal();
         });
     }
 
-    addCloseButtons() {
-        this.closeProjectButton.addEventListener("click", (e) => {
+    addClose() {
+        this.projectClose.addEventListener("click", (e) => {
             e.preventDefault();
            
             this.projectDialog.close();
             this.projectForm.reset();
         });
 
-        this.closeTodoButton.addEventListener("click", (e) => {
+        this.todoClose.addEventListener("click", (e) => {
             e.preventDefault();
             
             this.todoDialog.close();
@@ -46,12 +52,12 @@ export default class Input {
         });
     }
 
-    addSubmitProjectInput() {
-        this.submitProjectButton.addEventListener("click", (e) => {
+    addProjectSubmitInput() {
+        this.projectSubmit.addEventListener("click", (e) => {
             if (this.projectForm.checkValidity()) {
                 e.preventDefault();
                 
-                const projectTitle = this.projectForm.querySelector("title").value;
+                const projectTitle = this.projectForm.querySelector("#title").value;
                 const projectIndex = this.app.projects.length;
 
                 this.app.addProject(new Project(projectTitle));
@@ -67,156 +73,210 @@ export default class Input {
     addProjectDisplay(projectTitle, projectIndex) {
         const projectElement = document.createElement("li");
         projectElement.classList.add("project");
-        projectElement.setAttribute("data-index", `${projectIndex}`);
+        projectElement.setAttribute("data-project-index", `${projectIndex}`);
+        projectElement.setAttribute("role", "button");
+        projectElement.textContent = projectTitle;
         this.addProjectInput(projectElement);
-        
-        const h1 = document.createElement("h1");
-        h1.textContent = projectTitle;
-        
-        this.projectElement.appendChild(h1);
         this.projectContainer.appendChild(projectElement);
     }
 
     addProjectInput(projectElement) {
         projectElement.addEventListener("click", (e) => {
-            this.display.removeContainer(this.mainHeader);
+            this.updateProjectHeader(e);
             
-            const headTitle = document.createElement("h1");
-            this.display.addText(projectTitle, headTitle, this.mainHeader);
-
-            const headAdd = this.createShowAddTodo(projectIndex);
-            this.display.addElement(headAdd, this.mainHeader);
-
-            const headRemove = this.createRemoveProject(projectIndex);
-            this.display.addElement(headRemove, this.mainHeader);
-            
-            this.updateTodos(projectIndex);
+            this.updateTodoContainer(e);
         });
     }
 
-    createShowAddTodo(projectIndex) {
-        const headAdd = document.createElement("button"); 
-        headAdd.textContent = "Add Todo";
-        headAdd.setAttribute("data-mode", "add");
-        headAdd.setAttribute("data-project-index", `${projectIndex}`);
-        this.addShowTodoInput(headAdd);
-        return headAdd;
-    }
-    
-    createRemoveProject(projectIndex) {
-        const headRemove = document.createElement("button"); 
-        headRemove.textContent = "Remove Todo";
-        headRemove.setAttribute("data-project-index", `${projectIndex}`);
-        this.addRemoveProjectInput(headRemove);
-        return headRemove;
-    }
-
-    addRemoveProjectInput(headRemove) {
-        headRemove.addEventListener("click", (event) => {
-            const projectIndex = event.target.dataset.projectIndex;
-            this.app.removeProject(projectIndex);
-            console.log(document.querySelector(`[data-index="${projectIndex}"]`));
-            document.querySelector(`[data-index="${projectIndex}"]`).remove();
-            this.display.removeContainer(this.todoContainer);
-        });
-    }
-    
-    updateTodos(projectIndex) {
-        const todosLength = this.app.getProjectSize(projectIndex);
-        this.display.removeContainer(this.todoContainer);
-        for (let i = 0; i < todosLength; i++) {
-            const todo = document.createElement("li");
-            
-            const todoTitle = document.createElement("p");
-            this.display.addText(this.app.getTodoTitle(projectIndex, i), todoTitle, todo);
-            
-            const todoEdit = this.createShowEditTodo(projectIndex, i);
-            this.display.addElement(todoEdit, todo);
-            
-            const todoRemove = document.createElement("button");
-            todoRemove.textContent = "Remove Todo";
-            todo.appendChild(todoRemove);
+    updateProjectHeader(e) {
+        this.projectHeader.innerHTML = "";
         
-            this.todoContainer.appendChild(todo);
+        const projectIndex = e.currentTarget.dataset.projectIndex
+        this.projectHeader.setAttribute("data-project-index", `${projectIndex}`);
+            
+        const projectTitle = document.createElement("h1");
+        projectTitle.textContent = e.currentTarget.textContent;
+        this.projectHeader.appendChild(projectTitle);
+
+        const todoShowAdd = this.createTodoShowAdd();
+        this.projectHeader.appendChild(todoShowAdd);
+
+        const projectRemove = this.createProjectRemove();
+        this.projectHeader.appendChild(projectRemove);
+    }
+
+    createTodoShowAdd() {
+        const todoShowAdd = document.createElement("button"); 
+        todoShowAdd.textContent = "Add Todo";
+        todoShowAdd.setAttribute("data-mode", "add");
+        this.addTodoShowInput(todoShowAdd);
+        return todoShowAdd;
+    }
+
+    addTodoShowInput(todoShow) {
+        todoShow.addEventListener("click", (e) => {
+            this.todoDialog.showModal();
+            
+            const mode = e.currentTarget.dataset.mode;
+            this.todoSubmit.setAttribute("data-mode", mode);
+            if (mode === "add") {
+                this.todoSubmit.textContent = "Add";
+                const projectIndex = e.currentTarget.parentNode.dataset.projectIndex;
+                this.todoSubmit.setAttribute("data-project-index", projectIndex);
+            } else {
+                this.todoSubmit.textContent = "Edit";
+                const projectIndex = e.currentTarget.parentNode.parentNode.dataset.projectIndex;
+                const todoIndex = e.currentTarget.parentNode.dataset.todoIndex;
+                this.todoSubmit.setAttribute("data-project-index", projectIndex);
+                this.todoSubmit.setAttribute("data-todo-index", todoIndex);
+            }
+        });
+    }
+    
+    createProjectRemove() {
+        const projectRemove = document.createElement("button"); 
+        projectRemove.textContent = "Remove Project";
+        this.addProjectRemoveInput(projectRemove);
+        return projectRemove;
+    }
+
+    addProjectRemoveInput(projectRemove) {
+        projectRemove.addEventListener("click", (e) => {
+            const projectIndex = e.currentTarget.parentNode.dataset.projectIndex;
+            
+            this.app.removeProject(projectIndex);
+
+            const currentProject = document.querySelector(`.project[data-project-index="${projectIndex}"]`);
+            currentProject.remove();
+            this.projectHeader.innerHTML = "";
+            this.todoContainer.innerHTML = "";
+
+            this.refactorIndices("project", projectIndex);
+        });
+    }
+
+    refactorIndices(type, index) {
+        let i = parseInt(index);
+        let element = document.querySelector(`.${type}[data-${type}-index="${i + 1}"]`);
+        console.log(`.${type}[data-${type}-index="${i + 1}"]`);
+        console.log(element);
+        while (element !== null) {
+            element.setAttribute(`data-${type}-index`, `${i}`);
+            i++;
+            element = document.querySelector(`.${type}[data-${type}-index="${i + 1}"]`);
+        }
+    }
+    
+    updateTodoContainer(e) {
+        const projectIndex = e.currentTarget.dataset.projectIndex;
+        
+        this.todoContainer.innerHTML = "";
+        this.todoContainer.setAttribute("data-project-index", `${projectIndex}`);
+
+        const currentProject = this.app.projects[projectIndex]
+        const todosLength = currentProject.todos.length;
+
+        for (let i = 0; i < todosLength; i++) {
+            this.addTodoDisplay(currentProject, i);
         }
     }
 
-    addTodo(projectIndex) {
-        const todosLength = this.app.getProjectSize(projectIndex) - 1;
-        const todo = document.createElement("li"); 
+    addTodoDisplay(project, todoIndex) {
+        const todoElement = document.createElement("li");
+        todoElement.classList.add("todo");
+        todoElement.setAttribute("data-todo-index", `${todoIndex}`);
         
-        const todoTitle = document.createElement("p");
-        this.display.addText(this.app.getTodoTitle(projectIndex, todosLength), todoTitle, todo);
-            
-        const todoEdit = this.createShowEditTodo(projectIndex, todosLength);
-        this.display.addElement(todoEdit, todo);
-            
-        const todoRemove = document.createElement("button");
-        todoRemove.textContent = "Remove Todo";
-        todo.appendChild(todoRemove);
+        const todoTitle = document.createElement("h2");
+        const todoTitleText = project.todos[todoIndex].title;
+        todoTitle.textContent = todoTitleText;
+        todoElement.appendChild(todoTitle);
         
-        this.todoContainer.appendChild(todo);
+        const todoDueDate = document.createElement("h3");
+        const todoDueDateText = project.todos[todoIndex].dueDate;
+        todoDueDate.textContent = todoDueDateText;
+        todoElement.appendChild(todoDueDate);
+
+        const todoEdit = this.createShowEditTodo();
+        todoElement.appendChild(todoEdit);
+        
+        const todoRemove = this.createTodoRemove();
+        todoElement.appendChild(todoRemove);
+    
+        this.todoContainer.appendChild(todoElement);
     }
 
-    editTodo(projectIndex, todoIndex) {
-        const todosLength = this.app.getProjectSize(todoIndex);
-
-        const todo = document.querySelector(`[data-todo-index="${todoIndex}"]`);
-
-        todo.textContent = this.app.getTodoTitle(projectIndex, todoIndex);
-    }
-
-    createShowEditTodo(projectIndex, todoIndex) {
+    createShowEditTodo() {
         const todoEdit = document.createElement("button");
         todoEdit.textContent = "Edit Todo";
         todoEdit.setAttribute("data-mode", "edit");
-        todoEdit.setAttribute("data-project-index", `${projectIndex}`);
-        todoEdit.setAttribute("data-todo-index", `${todoIndex}`);
-        todoEdit.setAttribute("data-mode", "edit");
-        this.addShowTodoInput(todoEdit);
+        this.addTodoShowInput(todoEdit);
         return todoEdit;
     }
 
-    addShowTodoInput(showTodo) {
-        showTodo.addEventListener("click", () => {
-            this.addTodoDialog.showModal();
-            this.submitTodoButton.setAttribute("data-mode", showTodo.dataset.mode);
-            this.submitTodoButton.setAttribute("data-project-index", showTodo.dataset.projectIndex);
-            if (showTodo.dataset.mode) {
-                this.submitTodoButton.setAttribute("data-todo-index", showTodo.dataset.todoIndex);
-            }
+    createTodoRemove() {
+        const todoRemove = document.createElement("button");
+        todoRemove.textContent = "Remove Todo";
+        this.addTodoRemoveInput(todoRemove);
+        return todoRemove;
+    }
+
+    addTodoRemoveInput(todoRemove) {
+        todoRemove.addEventListener("click", (e) => {
+            const todoElement = e.currentTarget.parentNode;
+            const projectIndex = todoElement.parentNode.dataset.projectIndex;
+            const todoIndex = todoElement.dataset.todoIndex;
+            
+            const todo = this.app.projects[projectIndex]
+            todo.removeTodo(todoIndex);
+
+            todoElement.remove();
+            console.log(todoIndex);
+            this.refactorIndices("todo", todoIndex);
         });
     }
 
-    addSubmitTodoInput() {
-        this.submitTodoButton.addEventListener("click", (event) => {
-            if (this.addTodoForm.checkValidity()) {
-                event.preventDefault();
+    addTodoSubmitInput() {
+        this.todoSubmit.addEventListener("click", (e) => {
+            if (this.todoForm.checkValidity()) {
+                e.preventDefault();
                 
-                const title = document.querySelector(".add.todo title").value;
-                const description = document.querySelector(".add.todo description").value;
-                const dueDate = document.querySelector(".add.todo due-date").value;
-                const priority = document.querySelector('.add.todo [name="priority"]:checked').value;
-                const projectIndex = event.target.dataset.projectIndex;
+                const projectIndex = e.currentTarget.dataset.projectIndex; 
+
+                const title = this.todoForm.querySelector("#title").value;
                 
-                if (event.target.dataset.mode == "add") {
-                    this.app.addTodo(title, description, dueDate, priority, projectIndex);
-                    this.addTodo(projectIndex);
+                const description = this.todoForm.querySelector("#description").value;
+                const dueDate = this.todoForm.querySelector("#due-date").value;
+                const priority = this.todoForm.querySelector('[name="priority"]:checked').value;
+                
+                if (e.target.dataset.mode === "add") {
+                    this.app.projects[projectIndex].addTodo(new Todo(title, description, dueDate, priority));
+                    const currentProject = this.app.projects[projectIndex];
+                    this.addTodoDisplay(currentProject, currentProject.todos.length - 1);
                 } else {
-                    const todoIndex = event.target.dataset.projectIndex;
-                    this.app.setTodoProperties(title, description, dueDate, priority, projectIndex, todoIndex);
-                    this.editTodo(projectIndex, todoIndex);
+                    const todoIndex = e.currentTarget.dataset.todoIndex;
+                    const currentTodo = this.app.projects[projectIndex].todos[todoIndex];
+                    currentTodo.title = title;
+                    currentTodo.description = description;
+                    currentTodo.dueDate = dueDate;
+                    currentTodo.priority = priority;
+                    this.editTodoDisplay(projectIndex, todoIndex);
                 }
-
-                this.updateTodos(projectIndex);
-                console.log(this.app.getProjectTodos(projectIndex));
-                this.display.hideTodoDialog();
-                this.addTodoForm.reset();
+                this.todoDialog.close();
+                this.todoForm.reset();
             }
         });
     }
 
-    refactorIndices() {
-
+    editTodoDisplay(projectIndex, todoIndex) {
+        const todo = this.app.projects[projectIndex].todos[todoIndex];
+        const todoElement = document.querySelector(`.todo[data-todo-index="${todoIndex}`);
+        
+        const todoTitle = todoElement.querySelector("h2");
+        const todoTitleText = todo.title;
+        todoTitle.textContent = todoTitleText;
+        
+        const todoDueDate = todoElement.querySelector("h3");
+        const todoDueDateText = todo.dueDate;
+        todoDueDate.textContent = todoDueDateText;
     }
 };
