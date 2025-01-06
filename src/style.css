@@ -1,0 +1,29 @@
+body {
+    background-color: #171717;
+    color: #bef264;
+    font-family: "Ubuntu", serif;
+}
+
+img {
+    height: 25px;
+    width: 25px;
+}
+
+button {
+    background-color: #262626;
+    color: #bef264;
+    border: 3px solid #bef264;
+    border-radius: 5px;
+}
+
+dialog {
+    background-color: #171717;
+    color: #bef264;
+    border: 3px solid #bef264;
+    border-radius: 5px;
+}
+
+li {
+    list-style-type: none;
+}
+

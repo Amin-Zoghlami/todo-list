@@ -1,9 +1,13 @@
 import Todo from "./todo.js"
 import Project from "./project.js"
 import App from "./app.js";
+import Icons from "./icons.js"
+import { format } from "date-fns";
 
 export default class Input {
     
+    #icons;
+
     projectContainer = document.querySelector(".project-container");
     projectHeader = document.querySelector(".project-header");
     projectShow = document.querySelector(".show-project");
@@ -23,6 +27,7 @@ export default class Input {
 
     constructor() {
         this.app = new App();
+        this.#icons = new Icons();
         this.addInputs();
     }
     
@@ -114,7 +119,7 @@ export default class Input {
 
     createTodoShowAdd() {
         const todoShowAdd = document.createElement("button"); 
-        todoShowAdd.textContent = "Add Todo";
+        todoShowAdd.appendChild(this.#icons.add);
         todoShowAdd.setAttribute("data-mode", "add");
         this.addTodoShowInput(todoShowAdd);
         return todoShowAdd;
@@ -124,16 +129,30 @@ export default class Input {
         todoShow.addEventListener("click", (e) => {
             this.todoDialog.showModal();
             
+            this.todoSubmit.innerHTML = "";
+
             const mode = e.currentTarget.dataset.mode;
             this.todoSubmit.setAttribute("data-mode", mode);
             if (mode === "add") {
-                this.todoSubmit.textContent = "Add";
+                this.todoSubmit.appendChild(this.#icons.add);
                 const projectIndex = e.currentTarget.parentNode.dataset.projectIndex;
                 this.todoSubmit.setAttribute("data-project-index", projectIndex);
             } else {
-                this.todoSubmit.textContent = "Edit";
+                this.todoSubmit.appendChild(this.#icons.edit);
+                
                 const projectIndex = e.currentTarget.parentNode.parentNode.dataset.projectIndex;
                 const todoIndex = e.currentTarget.parentNode.dataset.todoIndex;
+                const todo = this.app.projects[projectIndex].todos[todoIndex];
+                
+                const titleText = todo.title;
+                const desciptionText = todo.description
+                const dueDateText = todo.dueDate;
+
+                this.todoForm.querySelector("#title").value = titleText;          
+                this.todoForm.querySelector("#description").value = desciptionText;
+                this.todoForm.querySelector("#due-date").value = dueDateText;
+                this.todoForm.querySelector('[name="priority"]:checked').value;
+
                 this.todoSubmit.setAttribute("data-project-index", projectIndex);
                 this.todoSubmit.setAttribute("data-todo-index", todoIndex);
             }
@@ -142,7 +161,7 @@ export default class Input {
     
     createProjectRemove() {
         const projectRemove = document.createElement("button"); 
-        projectRemove.textContent = "Remove Project";
+        projectRemove.appendChild(this.#icons.remove);
         this.addProjectRemoveInput(projectRemove);
         return projectRemove;
     }
@@ -202,7 +221,8 @@ export default class Input {
         todoElement.appendChild(todoTitle);
         
         const todoDueDate = document.createElement("h3");
-        const todoDueDateText = project.todos[todoIndex].dueDate;
+        console.log(project.todos[todoIndex].dueDate);
+        const todoDueDateText = format(new Date(project.todos[todoIndex].dueDate + "T00:00:00"), "MMMM dd, yyyy");
         todoDueDate.textContent = todoDueDateText;
         todoElement.appendChild(todoDueDate);
 
@@ -220,7 +240,6 @@ export default class Input {
 
     createTodoComplete() {
         const todoComplete = document.createElement("button");
-        todoComplete.textContent = "Incomplete";
         this.addTodoCompleteInput(todoComplete);
         return todoComplete;
     }
@@ -234,16 +253,16 @@ export default class Input {
             todo.isComplete = !todo.isComplete;
             
             if (todo.isComplete) {
-                checkbox.textContent = "Complete";
+                checkbox.appendChild(this.#icons.check);
             } else {
-                checkbox.textContent = "Incomplete";
+                checkbox.innerHTML = "";
             }
         })
     }
 
     createTodoShowEdit() {
         const todoEdit = document.createElement("button");
-        todoEdit.textContent = "Edit Todo";
+        todoEdit.appendChild(this.#icons.edit);
         todoEdit.setAttribute("data-mode", "edit");
         this.addTodoShowInput(todoEdit);
         return todoEdit;
@@ -251,7 +270,7 @@ export default class Input {
 
     createTodoRemove() {
         const todoRemove = document.createElement("button");
-        todoRemove.textContent = "Remove Todo";
+        todoRemove.appendChild(this.#icons.remove);
         this.addTodoRemoveInput(todoRemove);
         return todoRemove;
     }
@@ -273,7 +292,7 @@ export default class Input {
 
     createTodoDetails() {
         const todoDetails = document.createElement("button");
-        todoDetails.textContent = "Show Details";
+        todoDetails.appendChild(this.#icons.details);
         this.addTodoDetailsInput(todoDetails);
         return todoDetails;
     }
@@ -287,7 +306,7 @@ export default class Input {
 
             const todoTitleText = todo.title;
             const todoDescriptionText = todo.description;
-            const todoDueDateText = todo.dueDate;
+            const todoDueDateText = format(new Date(todo.dueDate + "T00:00:00"), "MMMM d yyyy");
             const todoPriorityText = todo.priority;
             const todoIsCompleteText = todo.isComplete ? "Complete" : "Incomplete";
 
@@ -314,13 +333,13 @@ export default class Input {
                 
                 const projectIndex = e.currentTarget.dataset.projectIndex; 
 
-                const title = this.todoForm.querySelector("#title").value;
-                
+                const title = this.todoForm.querySelector("#title").value;          
                 const description = this.todoForm.querySelector("#description").value;
                 const dueDate = this.todoForm.querySelector("#due-date").value;
+                console.log(dueDate);
                 const priority = this.todoForm.querySelector('[name="priority"]:checked').value;
                 
-                if (e.target.dataset.mode === "add") {
+                if (e.currentTarget.dataset.mode === "add") {
                     this.app.projects[projectIndex].addTodo(new Todo(title, description, dueDate, priority));
                     const currentProject = this.app.projects[projectIndex];
                     this.addTodoDisplay(currentProject, currentProject.todos.length - 1);
@@ -348,7 +367,7 @@ export default class Input {
         todoTitle.textContent = todoTitleText;
         
         const todoDueDate = todoElement.querySelector("h3");
-        const todoDueDateText = todo.dueDate;
+        const todoDueDateText = format(new Date(todo.dueDate + "T00:00:00"), "MMMM dd, yyyy");
         todoDueDate.textContent = todoDueDateText;
     }
 };
