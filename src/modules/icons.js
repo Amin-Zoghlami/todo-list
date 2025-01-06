@@ -32,7 +32,7 @@ export default class Icons {
 
         this.#details = document.createElement("img");
         this.#details.src = detailsImage; 
-        this.#details.alt = "Detail";
+        this.#details.alt = "Details";
 
         this.#edit = document.createElement("img");
         this.#edit.src = editImage; 

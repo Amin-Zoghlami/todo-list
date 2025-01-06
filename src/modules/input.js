@@ -107,7 +107,7 @@ export default class Input {
         this.projectHeader.setAttribute("data-project-index", `${projectIndex}`);
             
         const projectTitle = document.createElement("h1");
-        projectTitle.textContent = e.currentTarget.textContent;
+        projectTitle.textContent = `${e.currentTarget.textContent} To-Dos`;
         this.projectHeader.appendChild(projectTitle);
 
         const todoShowAdd = this.createTodoShowAdd();
@@ -212,7 +212,8 @@ export default class Input {
         todoElement.classList.add("todo");
         todoElement.setAttribute("data-todo-index", `${todoIndex}`);
         
-        const todoComplete = this.createTodoComplete();
+        const isTodoComplete = project.todos[todoIndex].isComplete;
+        const todoComplete = this.createTodoComplete(isTodoComplete);
         todoElement.appendChild(todoComplete);
 
         const todoTitle = document.createElement("h2");
@@ -238,8 +239,9 @@ export default class Input {
         this.todoContainer.appendChild(todoElement);
     }
 
-    createTodoComplete() {
+    createTodoComplete(isTodoComplete) {
         const todoComplete = document.createElement("button");
+        if (isTodoComplete) todoComplete.appendChild(this.#icons.check);
         this.addTodoCompleteInput(todoComplete);
         return todoComplete;
     }
@@ -304,11 +306,23 @@ export default class Input {
 
             const todo = this.app.projects[projectIndex].todos[todoIndex];
 
+            const todoTitleElement = document.createElement("p");
+            const todoDescriptionElement = document.createElement("p");
+            const todoDueDateElement = document.createElement("p");
+            const todoPriorityElement = document.createElement("p");
+            const todoIsCompleteElement = document.createElement("p");
+
             const todoTitleText = todo.title;
             const todoDescriptionText = todo.description;
             const todoDueDateText = format(new Date(todo.dueDate + "T00:00:00"), "MMMM d yyyy");
             const todoPriorityText = todo.priority;
             const todoIsCompleteText = todo.isComplete ? "Complete" : "Incomplete";
+
+            todoTitleElement.textContent = todoTitleText;
+            todoDescriptionElement.textContent = todoDescriptionText;
+            todoDueDateElement.textContent = todoDueDateText;
+            todoPriorityElement.textContent = todoPriorityText;
+            todoIsCompleteElement.textContent = todoIsCompleteText;
 
             const todoTitle = this.detailsDialog.querySelector(".title");
             const todoDescription = this.detailsDialog.querySelector(".description");
@@ -316,11 +330,11 @@ export default class Input {
             const todoPriority = this.detailsDialog.querySelector(".priority");
             const todoIsComplete = this.detailsDialog.querySelector(".is-complete");
 
-            todoTitle.textContent = todoTitleText;
-            todoDescription.textContent = todoDescriptionText;
-            todoDueDate.textContent = todoDueDateText;
-            todoPriority.textContent = todoPriorityText;
-            todoIsComplete.textContent = todoIsCompleteText;
+            todoTitle.appendChild(todoTitleElement);
+            todoDescription.appendChild(todoDescriptionElement);
+            todoDueDate.appendChild(todoDueDateElement);
+            todoPriority.appendChild(todoPriorityElement);
+            todoIsComplete.appendChild(todoIsCompleteElement);
             
             this.detailsDialog.showModal();
         });
