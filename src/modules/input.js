@@ -147,11 +147,12 @@ export default class Input {
                 const titleText = todo.title;
                 const desciptionText = todo.description
                 const dueDateText = todo.dueDate;
+                const priorityText = todo.priority;
 
                 this.todoForm.querySelector("#title").value = titleText;          
                 this.todoForm.querySelector("#description").value = desciptionText;
                 this.todoForm.querySelector("#due-date").value = dueDateText;
-                this.todoForm.querySelector('[name="priority"]:checked').value;
+                this.todoForm.querySelector(`[name="priority"][value="${priorityText}"]`).checked = true;
 
                 this.todoSubmit.setAttribute("data-project-index", projectIndex);
                 this.todoSubmit.setAttribute("data-todo-index", todoIndex);
@@ -306,36 +307,25 @@ export default class Input {
 
             const todo = this.app.projects[projectIndex].todos[todoIndex];
 
-            const todoTitleElement = document.createElement("p");
-            const todoDescriptionElement = document.createElement("p");
-            const todoDueDateElement = document.createElement("p");
-            const todoPriorityElement = document.createElement("p");
-            const todoIsCompleteElement = document.createElement("p");
-
             const todoTitleText = todo.title;
             const todoDescriptionText = todo.description;
             const todoDueDateText = format(new Date(todo.dueDate + "T00:00:00"), "MMMM d yyyy");
             const todoPriorityText = todo.priority;
+            console.log(todoPriorityText);
             const todoIsCompleteText = todo.isComplete ? "Complete" : "Incomplete";
 
-            todoTitleElement.textContent = todoTitleText;
-            todoDescriptionElement.textContent = todoDescriptionText;
-            todoDueDateElement.textContent = todoDueDateText;
-            todoPriorityElement.textContent = todoPriorityText;
-            todoIsCompleteElement.textContent = todoIsCompleteText;
+            const todoTitle = this.detailsDialog.querySelector(".title p");
+            const todoDescription = this.detailsDialog.querySelector(".description p");
+            const todoDueDate = this.detailsDialog.querySelector(".due-date p");
+            const todoPriority = this.detailsDialog.querySelector(".priority p");
+            const todoIsComplete = this.detailsDialog.querySelector(".is-complete p");
 
-            const todoTitle = this.detailsDialog.querySelector(".title");
-            const todoDescription = this.detailsDialog.querySelector(".description");
-            const todoDueDate = this.detailsDialog.querySelector(".due-date");
-            const todoPriority = this.detailsDialog.querySelector(".priority");
-            const todoIsComplete = this.detailsDialog.querySelector(".is-complete");
-
-            todoTitle.appendChild(todoTitleElement);
-            todoDescription.appendChild(todoDescriptionElement);
-            todoDueDate.appendChild(todoDueDateElement);
-            todoPriority.appendChild(todoPriorityElement);
-            todoIsComplete.appendChild(todoIsCompleteElement);
-            
+            todoTitle.textContent = todoTitleText;
+            todoDescription.textContent = todoDescriptionText;
+            todoDueDate.textContent = todoDueDateText;
+            todoPriority.textContent = todoPriorityText;
+            todoIsComplete.textContent = todoIsCompleteText;
+     
             this.detailsDialog.showModal();
         });
     }
@@ -350,9 +340,8 @@ export default class Input {
                 const title = this.todoForm.querySelector("#title").value;          
                 const description = this.todoForm.querySelector("#description").value;
                 const dueDate = this.todoForm.querySelector("#due-date").value;
-                console.log(dueDate);
                 const priority = this.todoForm.querySelector('[name="priority"]:checked').value;
-                
+                console.log(priority);
                 if (e.currentTarget.dataset.mode === "add") {
                     this.app.projects[projectIndex].addTodo(new Todo(title, description, dueDate, priority));
                     const currentProject = this.app.projects[projectIndex];

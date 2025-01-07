@@ -28,6 +28,13 @@ button {
     flex-shrink: 0;
 }
 
+dialog h1,
+h2
+h3,
+h4 {
+    margin: 10px;
+}
+
 button:hover {
     background-color: #6b7280;
 }
@@ -39,6 +46,10 @@ dialog {
     border-radius: 5px;
     padding: 20px;
     margin: auto;
+}
+
+dialog.details {
+    min-width: 200px;
 }
 
 dialog::backdrop {
@@ -64,6 +75,11 @@ ul.details {
     gap: 10px;
 }
 
+label, h3 {
+    font-size: 20px;
+    font-weight: 700;
+}
+
 input,
 textarea {
     font-family: "Ubuntu", serif;
@@ -78,15 +94,23 @@ textarea:focus {
 
 #title {
     height: 15px;
+    width: 300px;
 }
 
 #description {
-    height: 100px;
+    height: 200px;
+    width: 300px;
+    resize: none;
 }
 
 .inputs {
     display: flex;
     gap: 20px;
+}
+
+.inputs label {
+    font-size: 18px;
+    font-weight: 500;
 }
 
 li {
@@ -95,7 +119,7 @@ li {
 
 .project-container,
 .todo-container {
-    overflow-y: auto;
+    overflow: auto;
 }
 
 header {
@@ -118,8 +142,12 @@ header {
     padding: 20px 30px;
 }
 
+.sidebar h1 {
+    font-size: 35px;
+}
+
 li.project {
-    font-size: 20px;
+    font-size: 25px;
     padding: 15px;
     border-radius: 5px;
 }
@@ -134,6 +162,9 @@ li.project:hover {
 
 .main {
     padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .project-header {
@@ -142,6 +173,11 @@ li.project:hover {
     justify-content: center;
     align-items: end;
     gap: 20px;
+    flex: 0 0 0;
+}
+
+.project-header h1 {
+    font-size: 45px;
 }
 
 li.todo {
@@ -150,4 +186,13 @@ li.todo {
     display: flex;
     align-items: end;
     gap: 20px;
+    flex: 0 0 0;
+}
+
+li.todo h2 {
+    font-size: 30px;
+}
+
+li.todo h3 {
+    font-size: 18px;
 }
