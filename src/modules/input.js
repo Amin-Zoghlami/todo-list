@@ -32,6 +32,7 @@ export default class Input {
         this.#icons = new Icons();
         this.#initializeElements();
         this.#addInputs();
+        this.#loadLocalStorage();
     }
     
     #addInputs() {
@@ -95,6 +96,7 @@ export default class Input {
                 const projectIndex = this.#app.projects.length;
 
                 this.#app.addProject(new Project(projectTitle));
+                localStorage.setItem("projects", JSON.stringify(this.#app.projects));
 
                 this.#addProjectDisplay(projectTitle, projectIndex);
 
@@ -194,6 +196,7 @@ export default class Input {
             const projectIndex = e.currentTarget.parentNode.dataset.projectIndex;
             
             this.#app.removeProject(projectIndex);
+            localStorage.setItem("projects", JSON.stringify(this.#app.projects));
 
             const currentProject = document.querySelector(`.project[data-project-index="${projectIndex}"]`);
             currentProject.remove();
@@ -276,6 +279,7 @@ export default class Input {
             const todoIndex = checkbox.parentNode.dataset.todoIndex;
             const todo = this.#app.projects[projectIndex].todos[todoIndex];
             todo.isComplete = !todo.isComplete;
+            localStorage.setItem("projects", JSON.stringify(this.#app.projects));
             
             if (todo.isComplete) {
                 checkbox.appendChild(this.#icons.check);
@@ -365,7 +369,8 @@ export default class Input {
                 const priority = this.#todoForm.querySelector('[name="priority"]:checked').value;
                 console.log(priority);
                 if (e.currentTarget.dataset.mode === "add") {
-                    this.#app.projects[projectIndex].addTodo(new Todo(title, description, dueDate, priority));
+                    this.#app.projects[projectIndex].addTodo(new Todo(title, description, dueDate, priority, false));
+                    localStorage.setItem("projects", JSON.stringify(this.#app.projects));
                     const currentProject = this.#app.projects[projectIndex];
                     this.#addTodoDisplay(currentProject, currentProject.todos.length - 1);
                 } else {
@@ -375,6 +380,7 @@ export default class Input {
                     currentTodo.description = description;
                     currentTodo.dueDate = dueDate;
                     currentTodo.priority = priority;
+                    localStorage.setItem("projects", JSON.stringify(this.#app.projects));
                     this.#editTodoDisplay(projectIndex, todoIndex);
                 }
                 this.#todoDialog.close();
@@ -394,5 +400,22 @@ export default class Input {
         const todoDueDate = todoElement.querySelector("h3");
         const todoDueDateText = format(new Date(todo.dueDate + "T00:00:00"), "MMMM dd, yyyy");
         todoDueDate.textContent = todoDueDateText;
+    }
+
+    #loadLocalStorage() {
+        const projects = JSON.parse(localStorage.getItem("projects"));
+        if (projects) {
+            this.#app.projects = projects.map((projectData) => {
+                const project = new Project(projectData.title); 
+                project.todos = projectData.todos.map(
+                  (todoData) => new Todo(todoData.title, todoData.description, todoData.dueDate, todoData.priority, todoData.isComplete)
+                );
+            return project;
+            });
+            
+            for (let i = 0; i < this.#app.projects.length; i++) {
+                this.#addProjectDisplay(this.#app.projects[i].title, i);
+            }
+        }
     }
 };
